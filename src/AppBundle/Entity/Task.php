@@ -30,6 +30,12 @@ class Task
     private $title;
 
     /**
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="Tasks")
+     * @ORM\JoinColumn(name="user_id", columnDefinition="INT NOT NULL DEFAULT 1")
+     */
+    private $user;
+
+    /**
      * @ORM\Column(type="text")
      * @Assert\NotBlank(message="Vous devez saisir du contenu.")
      */
@@ -49,6 +55,18 @@ class Task
     public function getId()
     {
         return $this->id;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    public function setUser($user)
+    {
+        $this->user = $user;
+
+        return $this;
     }
 
     public function getCreatedAt()

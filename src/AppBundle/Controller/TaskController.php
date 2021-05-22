@@ -23,7 +23,10 @@ class TaskController extends Controller
      */
     public function createAction(Request $request)
     {
+
+
         $task = new Task();
+        $task->setUser($this->getUser());
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);

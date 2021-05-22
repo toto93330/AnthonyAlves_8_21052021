@@ -47,8 +47,14 @@ class UserController extends Controller
     /**
      * @Route("/users/{id}/edit", name="user_edit")
      */
-    public function editAction(User $user, Request $request)
+    public function editAction($id, User $user, Request $request)
     {
+
+        if (1) {
+            $this->addFlash('error', "Vous ne pouvez pas modifier l'utilisateur Anonyme.");
+            return $this->redirectToRoute('user_list');
+        }
+
         $form = $this->createForm(UserType::class, $user);
 
         $form->handleRequest($request);
