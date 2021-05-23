@@ -35,8 +35,7 @@ class User implements UserInterface
      *     min=2,
      *     max=25,
      *     minMessage="Votre nom utilisateur doit comporter au moins {{ limit }} caractères.",
-     *     maxMessage="Votre nom utilisateur ne peut pas contenir plus de {{ limit }} caractères."
-     * )
+     *     maxMessage="Votre nom utilisateur ne peut pas contenir plus de {{ limit }} caractères.")
      *
      * @var string
      */
@@ -49,8 +48,7 @@ class User implements UserInterface
      *     min=2,
      *     max=64,
      *     minMessage="Votre mot de passe doit comporter au moins {{ limit }} caractères.",
-     *     maxMessage="Votre mot de passe ne peut pas contenir plus de {{ limit }} caractères."
-     * )
+     *     maxMessage="Votre mot de passe ne peut pas contenir plus de {{ limit }} caractères.")
      *
      * @var string
      */
@@ -70,12 +68,12 @@ class User implements UserInterface
     private $email;
 
     /**
-     * @ORM\Column(name="roles", type="array")
+     * @ORM\Column(name="roles", type="simple_array")
      * @Assert\NotBlank(message="Vous devez cocher au moins un rôle.")
      *
      * @var array
      */
-    private $roles = [];
+    private $roles;
 
     /**
      * @return mixed

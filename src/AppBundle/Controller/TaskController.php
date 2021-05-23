@@ -4,9 +4,10 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Task;
 use AppBundle\Form\TaskType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class TaskController extends Controller
 {
@@ -16,6 +17,14 @@ class TaskController extends Controller
     public function listAction()
     {
         return $this->render('task/list.html.twig', ['tasks' => $this->getDoctrine()->getRepository('AppBundle:Task')->findAll()]);
+    }
+
+    /**
+     * @Route("/tasks/validate", name="task_validate_list")
+     */
+    public function validateListAction()
+    {
+        return $this->render('task/finish.html.twig', ['tasks' => $this->getDoctrine()->getRepository('AppBundle:Task')->findBy(['isDone' => '1'])]);
     }
 
     /**
@@ -86,6 +95,11 @@ class TaskController extends Controller
      */
     public function deleteTaskAction(Task $task)
     {
+
+        if ($this->getUser() !== $task->getUser() &&  $this->isGranted('ROLE_ADMIN') === FALSE) {
+            throw new AccessDeniedException("En tant qu'utilisateur, vous n'êtes pas autorisé à supprimer cette Note !");
+        }
+
         $em = $this->getDoctrine()->getManager();
         $em->remove($task);
         $em->flush();

@@ -31,17 +31,17 @@ class UserController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            dump($request);
-            // $em = $this->getDoctrine()->getManager();
-            // $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
-            // $user->setPassword($password);
 
-            // $em->persist($user);
-            // $em->flush();
+            $em = $this->getDoctrine()->getManager();
 
-            // $this->addFlash('success', "L'utilisateur a bien été ajouté.");
+            $password = $this->get('security.password_encoder')->encodePassword($user, $user->getPassword());
+            $user->setPassword($password);
 
-            // return $this->redirectToRoute('user_list');
+            $em->persist($user);
+            $em->flush();
+
+            $this->addFlash('success', "L'utilisateur a bien été ajouté.");
+            return $this->redirectToRoute('user_list');
         }
 
         return $this->render('user/create.html.twig', ['form' => $form->createView()]);

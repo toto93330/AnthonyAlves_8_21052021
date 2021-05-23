@@ -6,10 +6,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
+/**
+ * Class SecurityController
+ * @package AppBundle\Controller
+ */
 class SecurityController extends Controller
 {
     /**
      * @Route("/login", name="login")
+     * 
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function loginAction(Request $request)
     {
