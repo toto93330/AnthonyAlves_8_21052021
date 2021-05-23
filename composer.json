@@ -4,6 +4,10 @@
     "type": "project",
     "authors": [
         {
+            "name": "Sarah Khalil",
+            "role": "creator"
+        },
+        {
             "name": "Anthony Alves",
             "email": "contact@anthoynalves.fr",
             "role": "contributor"
