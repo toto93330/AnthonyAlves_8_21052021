@@ -1,77 +1,116 @@
 <?php
 
-namespace Tests\AppBundle\Entity;
+/**
+ * @author Sébastien Rochat <percevalseb@gmail.com>
+ */
 
-use AppBundle\Entity\User;
-use PHPUnit\Framework\TestCase;
+namespace Tests\AppBundle\Controller;
+
+use Symfony\Component\HTTPFoundation\Response;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
- * Class UserTest
- * @package Tests\AppBundle\Entity
+ * Class UserControllerTest
+ * @package Tests\AppBundle\Controller
  */
-class UserTest extends TestCase
+class UserControllerTest extends WebTestCase
 {
+    /**
+     * @var null
+     */
+    private $client = null;
 
     /**
-     * @var User
+     * @var string
      */
-    private $user;
+    private $usernameCreated = 'root666';
+
+    /**
+     * @var string
+     */
+    private $usernameUpdated = 'root666';
 
     protected function setUp()
     {
-        $this->user = new User();
+        $this->client = $this->createClient();
+        $crawler = $this->client->request('GET', '/login');
+        $form = $crawler->selectButton('Se connecter')->form();
+        $this->client->submit($form, array('_username' => 'root', '_password' => 'root'));
     }
 
-    public function testId()
+    public function testListAction()
     {
-        static::assertNull($this->user->getId());
-
-        $user = $this->createMock(User::class);
-        $user->method('getId')->willReturn(1);
-
-        static::assertInternalType('integer', $user->getId());
-        static::assertEquals(1, $user->getId());
+        $crawler = $this->client->request('GET', '/users');
+        static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        static::assertContains('Liste des utilisateurs', $crawler->filter('h1')->text());
     }
 
-    public function testUsername()
+    public function testCreateAction()
     {
-        $username = 'John-Doe';
-        $this->user->setUsername($username);
-
-        static::assertNotEmpty($username, $this->user->getUsername());
-        static::assertInternalType('string', $this->user->getUsername());
-        static::assertGreaterThanOrEqual(2, strlen($this->user->getUsername()));
-        static::assertLessThanOrEqual(25, strlen($this->user->getUsername()));
-        static::assertEquals($username, $this->user->getUsername());
+        $crawler = $this->client->request('GET', '/users');
+        $link = $crawler->selectLink('Créer un utilisateur')->link();
+        $crawler = $this->client->click($link);
+        static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        static::assertContains('Créer un utilisateur', $crawler->filter('h1')->text());
+        static::assertContains('/users/create', $crawler->filter('form')->attr('action'));
     }
 
-    public function testSalt()
+    public function testCreateActionWithValidData()
     {
-        static::assertNull($this->user->getSalt());
+        $crawler = $this->client->request('GET', '/users/create');
+        static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+
+        $form = $crawler->selectButton('Ajouter')->form();
+        $form['user[username]'] = $this->usernameCreated;
+        $form['user[password][first]'] = 'root';
+        $form['user[password][second]'] = 'root';
+        $form['user[email]'] = 'test2@test2.com';
+        $form['user[roles][0]']->tick();
+        $this->client->submit($form);
+        static::assertSame(Response::HTTP_FOUND, $this->client->getResponse()->getStatusCode());
+
+        $crawler = $this->client->followRedirect();
+        static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        static::assertContains("L'utilisateur a bien été ajouté.", $crawler->filter('div.alert-success')->text());
+        static::assertSame(1, $crawler->filter('td:contains("' . $this->usernameCreated . '")')->count());
     }
 
-    public function testPassword()
+    public function testCreateActionWithInvalidData()
     {
-        $password = '$2y$13$kO7NpKVl.UF1StxP5l36R.6aXGXX0HSQXtBbsoVq5Wv3nanWGtBVy';
-        $this->user->setPassword($password);
+        $crawler = $this->client->request('GET', '/users/create');
 
-        static::assertNotEmpty($password, $this->user->getPassword());
-        static::assertInternalType('string', $this->user->getPassword());
-        static::assertGreaterThanOrEqual(2, strlen($this->user->getPassword()));
-        static::assertLessThanOrEqual(64, strlen($this->user->getPassword()));
-        static::assertEquals($password, $this->user->getPassword());
+        $form = $crawler->selectButton('Ajouter')->form();
+        $form['user[username]'] = $this->usernameCreated;
+        $form['user[password][first]'] = 'root';
+        $form['user[password][second]'] = 'root1';
+        $form['user[email]'] = 'contacttoto.com';
+        $crawler = $this->client->submit($form);
+        static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        static::assertSame(1, $crawler->filter('span.help-block:contains("Ce nom d\'utilisateur existe déjà.")')->count());
+        static::assertSame(1, $crawler->filter('span.help-block:contains("Les deux mots de passe doivent correspondre.")')->count());
+        static::assertSame(1, $crawler->filter('span.help-block:contains("Le format de l\'adresse email n\'est pas correcte.")')->count());
+        static::assertSame(1, $crawler->filter('span.help-block:contains("Vous devez cocher au moins un rôle.")')->count());
     }
 
-    public function testEmail()
+    public function testEditAction()
     {
-        $email = 'user@gmail.com';
-        $this->user->setEmail($email);
+        $crawler = $this->client->request('GET', '/users');
+        $link = $crawler->selectLink('Edit')->last()->link();
+        $crawler = $this->client->click($link);
+        static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        static::assertContains('Modifier', $crawler->filter('h1')->text());
 
-        static::assertNotEmpty($email, $this->user->getEmail());
-        static::assertInternalType('string', $this->user->getEmail());
-        static::assertRegExp('/^.+\@\S+\.\S+$/', $this->user->getEmail());
-        static::assertLessThanOrEqual(255, strlen($this->user->getEmail()));
-        static::assertEquals($email, $this->user->getEmail());
+        $form = $crawler->selectButton('Modifier')->form();
+        $form['user[username]'] = $this->usernameUpdated;
+        $form['user[password][first]'] = 'root';
+        $form['user[password][second]'] = 'root';
+        $this->client->submit($form);
+        static::assertSame(Response::HTTP_FOUND, $this->client->getResponse()->getStatusCode());
+
+        $crawler = $this->client->followRedirect();
+        static::assertSame(Response::HTTP_OK, $this->client->getResponse()->getStatusCode());
+        static::assertContains("L'utilisateur a bien été modifié.", $crawler->filter('div.alert-success')->text());
+        static::assertSame(1, $crawler->filter('td:contains("' . $this->usernameUpdated . '")')->count());
     }
 
     public function testRoles()
