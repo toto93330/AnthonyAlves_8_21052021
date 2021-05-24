@@ -11,9 +11,10 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * @ORM\Table("user")
  * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Repository\UserRepository")
  * @UniqueEntity("username", message="Ce nom d'utilisateur existe déjà.")
  * @UniqueEntity("email", message="Cet adresse email existe déjà.")
- *
+ *  
  * Class User
  * @package AppBundle\Entity
  */
