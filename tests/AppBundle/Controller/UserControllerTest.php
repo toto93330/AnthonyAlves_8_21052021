@@ -2,10 +2,6 @@
 
 namespace Tests\AppBundle\Controller;
 
-use AppBundle\Entity\User;
-use Doctrine\ORM\EntityRepository;
-use phpDocumentor\Reflection\Types\This;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
