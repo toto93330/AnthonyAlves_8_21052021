@@ -22,6 +22,7 @@ class TaskController extends AbstractController
 
     /**
      * @Route("/tasks/validate", name="task_validate_list")
+     * @codeCoverageIgnore
      */
     public function validateListAction()
     {

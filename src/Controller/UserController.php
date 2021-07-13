@@ -31,6 +31,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/users/create", name="user_create")
+     * @codeCoverageIgnore
      */
     public function createAction(Request $request, UserPasswordHasherInterface $encode)
     {
@@ -55,6 +56,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/users/{id}/edit", name="user_edit")
+     * @codeCoverageIgnore
      */
     public function editAction($id, User $user, Request $request, UserPasswordHasherInterface $encode)
     {
@@ -79,6 +81,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/users/{id}/remove", name="user_remove")
+     * @codeCoverageIgnore
      */
     public function removeAction($id)
     {

@@ -78,6 +78,9 @@ class Task
         return $this;
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function getIsDone(): ?bool
     {
         return $this->isDone;

@@ -103,7 +103,7 @@ class TaskControllerTest extends WebTestCase
     public function testDelete()
     {
         $client = static::createClient();
-        $client->request('DELETE', '/tasks/19/delete');
+        $client->request('DELETE', '/tasks/14/delete');
         self::assertEquals(302, $client->getResponse()->getStatusCode());
 
         $crawler = $client->request('GET', '/login');
@@ -111,7 +111,7 @@ class TaskControllerTest extends WebTestCase
         $client->submit($form, array('email' => 'root@root.fr', 'password' => 'root'));
         $this->assertSame(302, $client->getResponse()->getStatusCode());
 
-        $client->request('DELETE', '/tasks/19/delete');
+        $client->request('DELETE', '/tasks/14/delete');
         self::assertEquals(302, $client->getResponse()->getStatusCode());
     }
 
