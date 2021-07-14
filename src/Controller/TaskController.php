@@ -65,6 +65,12 @@ class TaskController extends AbstractController
      */
     public function editAction(Task $task, Request $request)
     {
+
+        if ($this->getUser() !== $task->getUser() &&  $this->isGranted('ROLE_ADMIN') === FALSE) {
+            $this->addFlash('error', sprintf("Vous n'êtes pas autorisé à editer cette Note !", $task->getTitle()));
+            return $this->redirectToRoute('task_list');
+        }
+
         $form = $this->createForm(TaskType::class, $task);
 
         $form->handleRequest($request);
@@ -103,7 +109,9 @@ class TaskController extends AbstractController
     {
 
         if ($this->getUser() !== $task->getUser() &&  $this->isGranted('ROLE_ADMIN') === FALSE) {
-            throw new AccessDeniedException("En tant qu'utilisateur, vous n'êtes pas autorisé à supprimer cette Note !");
+
+            $this->addFlash('error', sprintf("Vous n'êtes pas autorisé à supprimer cette Note !", $task->getTitle()));
+            return $this->redirectToRoute('task_list');
         }
 
         $em = $this->getDoctrine()->getManager();
