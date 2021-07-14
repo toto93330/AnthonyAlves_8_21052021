@@ -2,6 +2,9 @@
 
 Amélioration et documentation d'un projet existant ToDo & Co.
 
+![enter image description here](https://i.ibb.co/0GPV137/Sans-titre-2.jpg)
+
+
 ## Installation
 1. Clonez ou téléchargez le repository GitHub dans le dossier voulu :
 ```
